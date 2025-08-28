@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felcup Engiene 25</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100vh;
+            margin: 0;
+            padding: 0 5%;
+            font-family: 'Arial Black', Gadget, sans-serif;
+            background: linear-gradient(to bottom, #228B22, #006400);
+            color: #fff;
+            text-align: center;
+            overflow: hidden;
+        }
+        #topBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #000;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 15;
+        }
+        #topTitle {
+            font-size: 2em;
+            color: #fff;
+            text-shadow: 0 0 5px #FFA500;
+        }
+        #topTitle span.felcup {
+            color: #FFA500;
+        }
+        #topTitle span.engiene {
+            color: #FFA500;
+        }
+        #topTitle .by {
+            font-family: 'Press Start 2P', cursive;
+            color: #FFA500;
+            font-style: normal;
+            font-size: 0.8em;
+        }
+        #topBar button {
+            padding: 8px 16px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #topBar button:hover {
+            background: #FF8C00;
+        }
+        #resetBtn {
+            position: fixed;
+            top: 10px;
+            left: 20px;
+        }
+        #container {
+            height: calc(100% - 50px);
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #setup {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            width: 80%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #nameInput {
+            padding: 10px;
+            width: 200px;
+            border-radius: 4px;
+            border: none;
+        }
+        #addButton {
+            padding: 10px 20px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 5px; /* Reduced margin to bring + button closer */
+        }
+        #addButton:hover {
+            background: #FF8C00;
+        }
+        #setPercentBtn {
+            padding: 10px 20px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #setPercentBtn:hover {
+            background: #FF8C00;
+        }
+        #field {
+            position: relative;
+            width: 80%;
+            height: 50%;
+            background: #228B22;
+            outline: 5px solid #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .player-name {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            color: #000;
+            border: 3px solid #333;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px; 
+            font-family: 'Arial', sans-serif; 
+            text-align: center;
+            padding: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.3);
+            transition: all 0.1s;
+            word-break: break-word;
+            line-height: 1.1;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+            opacity: 0.9;
+            font-weight: normal;
+        }
+        .player-text {
+            max-width: 100%; /* Use full available width */
+            white-space: normal; /* Allow line breaks */
+        }
+        .player-text .name {
+            font-size: 10px;
+        }
+        .player-text .achievements {
+            font-size: 8px;
+        }
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.5) rotate(45deg); opacity: 0.5; box-shadow: 0 0 20px red; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .exploding {
+            animation: explode 0.5s forwards;
+        }
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: red;
+            border-radius: 50%;
+            animation: particle-fly 1s forwards;
+        }
+        @keyframes particle-fly {
+            0% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate3d(-4px, 0, 0); }
+            20%, 40%, 60%, 80% { transform: translate3d(4px, 0, 0); }
+        }
+        .shaking {
+            animation: shake 0.5s infinite;
+        }
+        #startSortButton {
+            padding: 12px 24px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            visibility: hidden;
+        }
+        #startSortButton:hover {
+            background: #FF8C00;
+        }
+        #selectionModal {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 50px);
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: row;
+            z-index: 10;
+            animation: fadeIn 1s;
+            padding: 20px 20px 40px 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        #entryValueContainer {
+            margin-left: -150px;
+            margin-right: 20px;
+            margin-top: 100px;
+            font-size: 1.8em;
+            color: #228B22;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,215,0,0.5);
+            height: fit-content;
+            border: 2px dashed #FFD700;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            align-self: center;
+        }
+        #entryValue {
+            padding: 10px;
+            width: 100px;
+            border-radius: 4px;
+            border: none;
+            font-size: 1.2em;
+        }
+        #selectedListContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70%;
+        }
+#selectedList {
+    background: #fff;
+    color: #333;
+    padding: 10px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    position: relative;
+    box-sizing: border-box;
+    max-height: calc(100vh - 300px);
+    overflow-y: hidden;
+    font-size: 0.9em;
+}
+.selected-player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px;
+    padding: 5px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    width: calc(50% - 10px);
+    box-sizing: border-box;
+    transition: background 0.3s;
+    font-size: 0.9em;
+}
+        .selected-player.paid {
+            background: #90EE90;
+        }
+        .selected-player span {
+            flex: 1;
+            text-align: left;
+            margin-right: 5px;
+            overflow: visible;
+            text-overflow: clip;
+            white-space: normal;
+            font-family: 'Arial', sans-serif;
+            font-weight: normal;
+        }
+        .buttons {
+            display: flex;
+        }
+        .ok-btn, .x-btn {
+            padding: 3px 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 3px;
+        }
+        .ok-btn {
+            background: #32CD32;
+            color: white;
+        }
+        .x-btn {
+            background: #FF4500;
+            color: white;
+        }
+        #statusInfo {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        #sortBracketButton {
+            padding: 12px 24px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            visibility: hidden;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        #sortBracketButton:hover {
+            background: #FF8C00;
+        }
+        #bracket-viewport {
+            width: 100%;
+            height: calc(100% - 50px);
+            margin-top: 50px;
+            position: relative;
+            overflow: hidden;
+            display: none;
+            background: rgba(255,255,255,0.1);
+        }
+        #bracket {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+        }
+        .phase-label {
+            position: absolute;
+            font-size: 1.2em;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        .match {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            margin: 0;
+            padding: 15px;
+            background: #fff;
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-in;
+            /* Removido overflow: hidden para exibir todo o conteúdo, incluindo o botão */
+        }
+        .match-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #228B22;
+        }
+        .player {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .player-name-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 5px;
+            font-family: 'Arial', sans-serif;
+            font-weight: normal;
+            position: relative;
+        }
+        .player-name-text:hover::after {
+            content: attr(title);
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            z-index: 10;
+            white-space: normal;
+            left: 0;
+            top: -30px;
+            font-size: 0.9em;
+        }
+        .player input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .player .player-text {
+            max-width: calc(100% - 70px);
+            white-space: normal;
+            line-height: 1.1;
+            margin-right: 5px;
+        }
+        .player .player-text .name {
+            font-size: 12px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player .player-text .achievements {
+            font-size: 10px;
+            display: block;
+            margin-top: -2px; /* Close to name */
+        }
+        .vs {
+            font-weight: bold;
+            margin: 10px 0;
+            color: #FFD700;
+        }
+        .winner {
+            background: linear-gradient(to right, #90EE90, #32CD32);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #32CD32;
+            animation: winnerPulse 1s infinite alternate;
+        }
+        @keyframes winnerPulse {
+            from { box-shadow: 0 0 10px #32CD32; }
+            to { box-shadow: 0 0 30px #32CD32; }
+        }
+        .loser {
+            background: linear-gradient(to right, #FFB6C1, #FF4500);
+            opacity: 0.7;
+            transform: scale(0.95);
+        }
+        button.resolve {
+            padding: 12px 24px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        button.resolve:hover {
+            background: #FF8C00;
+        }
+        #results {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 500px;
+            padding: 30px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 20;
+            color: #333;
+            display: none;
+            word-wrap: break-word;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        #results h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #228B22;
+        }
+        #results ul {
+            list-style: none;
+            padding: 0;
+        }
+        #results li {
+            font-size: 0.9em;
+            margin: 5px 0;
+            padding: 5px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+        .trophy {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        canvas#confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        /* Styled Alert */
+        .styled-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #FF4500;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 200;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        #confirmModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 30;
+            text-align: center;
+        }
+        #confirmYes, #confirmNo {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #confirmYes {
+            background: #32CD32;
+            color: white;
+        }
+        #confirmNo {
+            background: #FF4500;
+            color: white;
+        }
+        #convocados {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        #showResults {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 15;
+        }
+
+        #percentModal input[type="file"] {
+    width: auto;
+}
+
+        #timerModal, #rouletteModal, #rouletteEntriesModal, #percentModal, #progressModal, #historyModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(to bottom, #fff, #f0f0f0);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 100;
+            text-align: center;
+            width: min(90%, 400px);
+            height: auto;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        #rouletteModal {
+            position: fixed;
+            padding: 10px;
+            width: min(90%, 750px);
+            height: auto;
+            overflow-y: hidden;
+            display: none; /* Ensure it's hidden initially */
+        }
+        #rouletteModal header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        #rouletteModal h2 {
+            margin: 0 0 10px 0;
+        }
+        #manageEntries {
+            margin-bottom: 10px;
+        }
+        #rouletteModal .roulette-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        #rouletteModal .roulette-canvas {
+            flex: 0 0 auto;
+        }
+        #rouletteModal .roulette-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 20px;
+        }
+        #rouletteEntriesModal {
+            background: linear-gradient(to bottom, #d3d3d3, #a9a9a9);
+            height: 400px;
+            overflow-y: hidden;
+        }
+        #timerModal h2, #rouletteModal h2, #rouletteEntriesModal h2, #percentModal h2, #progressModal h2, #historyModal h2 {
+            color: #228B22;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        #timerDisplay {
+            font-size: 3em;
+            margin-bottom: 20px;
+            background: #FFD700;
+            color: #228B22;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            animation: rotateBorder 2s linear infinite;
+        }
+        @keyframes rotateBorder {
+            0% { border: 2px solid #228B22; }
+            50% { border: 2px solid #FFD700; }
+            100% { border: 2px solid #228B22; }
+        }
+        #saveChampionship {
+    background: #FF4500; 
+    color: white;
+}
+        #timerModal button, #rouletteModal button, #rouletteEntriesModal button, #percentModal button, #progressModal button, #historyModal button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #32CD32;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #timerModal button:hover, #rouletteModal button:hover, #rouletteEntriesModal button:hover, #percentModal button:hover, #progressModal button:hover, #historyModal button:hover {
+            background: #228B22;
+        }
+        #entryInput {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        #loadFile {
+            margin-bottom: 10px;
+        }
+        #rouletteCanvas {
+            display: block;
+            margin: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        #rouletteResult {
+            font-size: 1.2em;
+            margin-top: 5px;
+            color: #FFD700;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 6px;
+            white-space: normal;
+            overflow-y: auto; /* Ativa barra de rolagem vertical */
+            height: 90px; /* Altura para aproximadamente 3 linhas */
+            width: 300px; /* Increased width for better visibility */
+            max-width: 300px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+        }
+        #rouletteEntriesList {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 6px;
+            background: #f9f9f9;
+        }
+        #rouletteEntriesList ul {
+            list-style: none;
+            padding: 0;
+        }
+        #rouletteEntriesList li {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 0.8em;
+        }
+        #rouletteEntriesList .entry-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 10px;
+            font-family: 'Arial', sans-serif;
+            font-weight: normal;
+        }
+        #progressBtn {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 10px;
+            background: #FFD700;
+            color: #228B22;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 15;
+            display: none;
+        }
+        #percentModal .input-group {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        #percentModal label {
+            width: 200px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        #percentModal input {
+            width: 100px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #progressModal {
+            padding: 20px;
+        }
+        #progressModal h2 {
+            margin-bottom: 10px;
+        }
+        #progressModal ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #progressModal li {
+            font-size: 0.9em;
+            margin: 5px 0;
+            padding: 5px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            color: #333;
+            white-space: nowrap;
+        }
+        #closeProgress {
+            margin-top: 10px;
+        }
+        #spinRoulette, #closeRoulette {
+            padding: 5px 10px;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        #historyModal .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+        }
+        #historyModal .tab-btn {
+            padding: 10px;
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #historyModal .tab-btn.active {
+            background: #32CD32;
+            color: white;
+        }
+        #historyModal .ranking-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            min-width: 350px;
+        }
+        #historyModal .ranking-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            white-space: nowrap;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .blinking {
+            animation: blink 1s infinite;
+        }
+        #historyModal {
+            height: 500px; /* Fixed height */
+            width: min(90%, 500px);
+        }
+    </style>
+</head>
+<body>
+    <div id="topBar">
+        <div id="topTitle"><span class="felcup">FELCUP</span> <span class="engiene">ENGIENE 25</span> by <span class="by">@bobbyzera</span></div>
+        <button id="timerBtn">Cronômetro</button>
+        <button id="rouletteBtn">Roleta</button>
+        <button id="historyBtn">Histórico</button>
+        <button id="resetBtn">Resetar</button>
+    </div>
+    <div id="container">
+        
+    <div id="setup">
+        <div class="input-group">
+            <input type="text" id="nameInput" placeholder="Digite o nome do jogador">
+            <button id="addButton">+</button>
+        </div>
+        <button id="setPercentBtn">%</button>
+    </div>
+    
+    <div id="field"></div>
+    <div id="convocados">Pré Convocados: 0</div>
+    
+    <button id="startSortButton">Iniciar</button>
+    
+    <div id="selectionModal">
+        <div id="selectedListContainer">
+            <h2>Lista de pré convocados</h2>
+            <div id="selectedList"></div>
+            <div id="statusInfo">0/16 Escalados | Reserva: 0</div>
+            <button id="sortBracketButton">Sortear Chaveamento</button>
+        </div>
+        <div id="entryValueContainer">
+            <label for="entryValue">Ingresso (R$):</label>
+            <input type="number" step="0.01" id="entryValue" min="0">
+        </div>
+    </div>
+    
+    <div id="bracket-viewport">
+        <div id="bracket"></div>
+    </div>
+    
+    <div id="results">
+        <h2>Parabéns aos premiados!</h2>
+        <canvas id="resultsPie" width="300" height="200"></canvas>
+        <ul></ul>
+        <button id="saveChampionship" class="blinking">Salvar Campeonato</button>
+        <button id="minimizeResults">Minimizar</button>
+    </div>
+    
+    <canvas id="confetti"></canvas>
+    <div id="confirmModal">
+        <p id="confirmMessage"></p>
+        <button id="confirmYes">Sim</button>
+        <button id="confirmNo">Não</button>
+    </div>
+    <button id="showResults">Ver Resultados</button>
+</div>
+<div id="timerModal">
+    <h2>Cronômetro</h2>
+    <div id="timerDisplay">00:00.000</div>
+    <button id="startTimer">Iniciar</button>
+    <button id="stopTimer">Parar</button>
+    <button id="resetTimer">Resetar</button>
+    <button id="closeTimer">Fechar</button>
+</div>
+<div id="rouletteModal">
+    <header>
+        <h2>Roleta</h2>
+        <button id="manageEntries">Gerenciar Entradas</button>
+    </header>
+    <div class="roulette-content">
+        <div class="roulette-canvas">
+            <canvas id="rouletteCanvas" width="400" height="400"></canvas>
+        </div>
+        <div class="roulette-controls">
+            <div id="rouletteResult"></div>
+            <div class="buttons-container">
+                <button id="spinRoulette">Sortear</button>
+                <button id="closeRoulette">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="rouletteEntriesModal">
+    <h2>Gerenciar Entradas</h2>
+    <input type="text" id="entryInput" placeholder="Adicionar entrada">
+    <button id="addEntry">Adicionar</button>
+    <input type="file" id="loadFile" accept=".txt">
+    <div id="rouletteEntriesList">
+        <ul></ul>
+    </div>
+    <button id="closeEntries">Fechar</button>
+</div>
+<button id="progressBtn">📊</button>
+<div id="percentModal">
+    <h2>Definir Percentuais dos Prêmios</h2>
+    <div class="input-group">
+        <label>% Prêmio do Campeão:</label>
+        <input type="number" id="percentChampion" min="0" max="100">
+    </div>
+    <div class="input-group">
+        <label>% Prêmio do Vice-Campeão:</label>
+        <input type="number" id="percentVice" min="0" max="100">
+    </div>
+    <div class="input-group">
+        <label>% Prêmio da Maior Forrada:</label>
+        <input type="number" id="percentMax" min="0" max="100">
+    </div>
+    <div class="input-group">
+        <label>% Prêmio do Organizador:</label>
+        <input type="number" id="percentOrganizer" min="0" max="100">
+    </div>
+    <div class="input-group">
+        <label>Valor do Bônus (R$):</label>
+        <input type="number" step="0.01" id="bonusValue" min="0">
+    </div>
+    <div class="input-group">
+        <label>Quanto será descontado de cada ingresso (taxas) (R$):</label>
+        <input type="number" step="0.01" id="taxValue" min="0">
+    </div>
+    <div class="input-group">
+        <label>Carregar Campeonatos Anteriores:</label>
+        <input type="file" id="loadHistoryFile" accept=".txt">
+    </div>
+    <button id="savePercent">Salvar</button>
+    <button id="closePercent">Cancelar</button>
+</div>
+<div id="progressModal">
+    <h2>Progresso Atual</h2>
+    <canvas id="progressPie" width="300" height="200"></canvas>
+    <ul></ul>
+    <button id="closeProgress">Fechar</button>
+</div>
+<div id="historyModal">
+    <h2>Histórico</h2>
+    <div class="tabs">
+        <button class="tab-btn active" data-type="campeao">Campeões</button>
+        <button class="tab-btn" data-type="vice">Vices</button>
+        <button class="tab-btn" data-type="forrador">Forradores</button>
+    </div>
+    <div class="ranking-list"></div>
+    <button id="closeHistory">Fechar</button>
+</div>
+
+<script>
+    let allPlayers = [];
+    let selectedPlayers = [];
+    let eliminatedPlayers = [];
+    let confirmedPlayers = [];
+    let entryValue = 10;
+    let taxValue = 0;
+    let bonusValue = 0;
+    let pot = 0;
+    let maxResult = 0;
+    let maxResultPlayer = 'Nenhum';
+    let winners = { oitavas: [], quartas: [], semis: [], final: [] };
+    let losers = { final: [] };
+    let phases = ['oitavas', 'quartas', 'semis', 'final'];
+    let matchCounts = { oitavas: 8, quartas: 4, semis: 2, final: 1 };
+    let phasePlayers = { oitavas: [], quartas: [], semis: [], final: [] };
+    let matchResults = {};
+    let animationFrameId = null;
+    let placedPositions = [];
+    let currentPhaseIndex = 0;
+    let currentMatch = 0;
+    let rouletteEntries = [];
+    let percentChampion = null;
+    let percentVice = null;
+    let percentMax = null;
+    let percentOrganizer = null;
+    let history = []; // [{type: 'campeao', name: 'lower', originalName: 'Original', value: number}]
+    let achievements = {}; // {lowerName: {gold: count, silver: count, money: count, sum: number}}
+
+    const colWidth = 300;
+    const matchWidth = 250;
+    const matchHeight = 250;
+    const bracketWidth = 7 * colWidth;
+    const bracketHeight = 1400;
+
+    const matchPositions = {
+        oitavas: [
+            {col: 0, top: 60},
+            {col: 0, top: 360},
+            {col: 0, top: 660},
+            {col: 0, top: 960},
+            {col: 6, top: 60},
+            {col: 6, top: 360},
+            {col: 6, top: 660},
+            {col: 6, top: 960}
+        ],
+        quartas: [
+            {col: 1, top: 210},
+            {col: 1, top: 810},
+            {col: 5, top: 210},
+            {col: 5, top: 810}
+        ],
+        semis: [
+            {col: 2, top: 510},
+            {col: 4, top: 510}
+        ],
+        final: [
+            {col: 3, top: 510}
+        ]
+    };
+
+    const field = document.getElementById('field');
+    const nameInput = document.getElementById('nameInput');
+    const addButton = document.getElementById('addButton');
+    const startSortButton = document.getElementById('startSortButton');
+    const selectionModal = document.getElementById('selectionModal');
+    const selectedList = document.getElementById('selectedList');
+    const statusInfo = document.getElementById('statusInfo');
+    const sortBracketButton = document.getElementById('sortBracketButton');
+    const bracketViewport = document.getElementById('bracket-viewport');
+    const bracket = document.getElementById('bracket');
+    const results = document.getElementById('results');
+    const entryValueInput = document.getElementById('entryValue');
+    const convocados = document.getElementById('convocados');
+    const topBar = document.getElementById('topBar');
+    const timerBtn = document.getElementById('timerBtn');
+    const rouletteBtn = document.getElementById('rouletteBtn');
+    const historyBtn = document.getElementById('historyBtn');
+    const timerModal = document.getElementById('timerModal');
+    const rouletteModal = document.getElementById('rouletteModal');
+    const rouletteEntriesModal = document.getElementById('rouletteEntriesModal');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const startTimer = document.getElementById('startTimer');
+    const stopTimer = document.getElementById('stopTimer');
+    const resetTimer = document.getElementById('resetTimer');
+    const closeTimer = document.getElementById('closeTimer');
+    const manageEntries = document.getElementById('manageEntries');
+    const entryInput = document.getElementById('entryInput');
+    const addEntry = document.getElementById('addEntry');
+    const loadFile = document.getElementById('loadFile');
+    const rouletteEntriesList = document.getElementById('rouletteEntriesList').querySelector('ul');
+    const closeEntries = document.getElementById('closeEntries');
+    const spinRoulette = document.getElementById('spinRoulette');
+    const closeRoulette = document.getElementById('closeRoulette');
+    const rouletteCanvas = document.getElementById('rouletteCanvas');
+    const rouletteCtx = rouletteCanvas.getContext('2d');
+    const rouletteResult = document.getElementById('rouletteResult');
+    const setPercentBtn = document.getElementById('setPercentBtn');
+    const percentModal = document.getElementById('percentModal');
+    const savePercent = document.getElementById('savePercent');
+    const closePercent = document.getElementById('closePercent');
+    const progressBtn = document.getElementById('progressBtn');
+    const progressModal = document.getElementById('progressModal');
+    const closeProgress = document.getElementById('closeProgress');
+    const resetBtn = document.getElementById('resetBtn');
+    const historyModal = document.getElementById('historyModal');
+    const closeHistory = document.getElementById('closeHistory');
+    const saveChampionship = document.getElementById('saveChampionship');
+    const loadHistoryFile = document.getElementById('loadHistoryFile');
+
+    // Inicialmente esconder botão Iniciar
+    startSortButton.style.visibility = 'hidden';
+    selectionModal.style.display = 'none';
+    bracketViewport.style.display = 'none';
+    results.style.display = 'none';
+    sortBracketButton.style.visibility = 'hidden';
+
+    bracket.style.width = `${bracketWidth}px`;
+    bracket.style.height = `${bracketHeight}px`;
+
+    let zoomLevel = 1;
+    let transX = 0;
+    let transY = 0;
+    let isDragging = false;
+    let startX, startY;
+
+    bracketViewport.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX - transX;
+        startY = e.clientY - transY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            transX = e.clientX - startX;
+            transY = e.clientY - startY;
+            updateTransform();
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    bracketViewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const oldZoom = zoomLevel;
+        const delta = e.deltaY < 0 ? 0.1 : -0.1;
+        zoomLevel += delta;
+        zoomLevel = Math.max(0.5, Math.min(3, zoomLevel));
+        const rect = bracketViewport.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        transX = mx - (mx - transX) * (zoomLevel / oldZoom);
+        transY = my - (my - transY) * (zoomLevel / oldZoom);
+        updateTransform();
+    });
+
+    function updateTransform() {
+        bracket.style.transform = `translate(${transX}px, ${transY}px) scale(${zoomLevel})`;
+    }
+
+    // Load state from localStorage on page load
+    function loadState() {
+        const savedState = localStorage.getItem('felcupState');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            allPlayers = state.allPlayers || [];
+            selectedPlayers = state.selectedPlayers || [];
+            eliminatedPlayers = state.eliminatedPlayers || [];
+            confirmedPlayers = state.confirmedPlayers || [];
+            entryValue = state.entryValue || 10;
+            taxValue = state.taxValue || 0;
+            bonusValue = state.bonusValue || 0;
+            pot = state.pot || 0;
+            maxResult = state.maxResult || 0;
+            maxResultPlayer = state.maxResultPlayer || 'Nenhum';
+            winners = state.winners || { oitavas: [], quartas: [], semis: [], final: [] };
+            losers = state.losers || { final: [] };
+            phasePlayers = state.phasePlayers || { oitavas: [], quartas: [], semis: [], final: [] };
+            matchResults = state.matchResults || {};
+            placedPositions = state.placedPositions || [];
+            currentPhaseIndex = state.currentPhaseIndex || 0;
+            currentMatch = state.currentMatch || 0;
+            rouletteEntries = state.rouletteEntries || [];
+            percentChampion = state.percentChampion || null;
+            percentVice = state.percentVice || null;
+            percentMax = state.percentMax || null;
+            percentOrganizer = state.percentOrganizer || null;
+            history = state.history || [];
+            updateAchievements();
+            // Restore UI based on state
+            if (confirmedPlayers.length === 16) {
+                document.getElementById('setup').style.display = 'none';
+                startSortButton.style.display = 'none';
+                convocados.style.display = 'none';
+                field.style.display = 'none';
+                selectionModal.style.display = 'none';
+                bracketViewport.style.display = 'block';
+                progressBtn.style.display = 'block';
+                initAllPhases();
+                drawBracketLines();
+                // Restore all phases up to current
+                for (let idx = 0; idx < currentPhaseIndex; idx++) {
+                    startPhase(phases[idx]);
+                }
+                // Restore current phase
+                startPhase(phases[currentPhaseIndex]);
+                if (currentPhaseIndex >= phases.length) {
+                    showResults();
+                }
+            } else if (selectedPlayers.length > 0) {
+                document.getElementById('setup').style.display = 'none';
+                startSortButton.style.display = 'none';
+                convocados.style.display = 'none';
+                field.style.display = 'none';
+                showSelectionModal();
+            } else if (allPlayers.length > 0) {
+                // Restore field with players
+                allPlayers.forEach(name => addNameToField(name));
+                updateConvocados();
+                if (allPlayers.length >= 16) {
+                    startSortButton.style.visibility = 'visible';
+                }
+            }
+            // Restore roulette entries
+            if (rouletteEntries.length > 0) {
+                updateRouletteList();
+                drawWheel();
+            }
+        }
+    }
+
+    loadState();
+
+    // Save state to localStorage
+    function saveState() {
+        const state = {
+            allPlayers,
+            selectedPlayers,
+            eliminatedPlayers,
+            confirmedPlayers,
+            entryValue,
+            taxValue,
+            bonusValue,
+            pot,
+            maxResult,
+            maxResultPlayer,
+            winners,
+            losers,
+            phasePlayers,
+            matchResults,
+            placedPositions,
+            currentPhaseIndex,
+            currentMatch,
+            rouletteEntries,
+            percentChampion,
+            percentVice,
+            percentMax,
+            percentOrganizer,
+            history
+        };
+        localStorage.setItem('felcupState', JSON.stringify(state));
+    }
+
+    resetBtn.addEventListener('click', () => {
+        showConfirm('Deseja resetar tudo?', (yes) => {
+            if (yes) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+    });
+
+    setPercentBtn.addEventListener('click', () => {
+        percentModal.style.display = 'block';
+        document.getElementById('percentChampion').value = percentChampion ? (percentChampion * 100).toFixed(0) : '';
+        document.getElementById('percentVice').value = percentVice ? (percentVice * 100).toFixed(0) : '';
+        document.getElementById('percentMax').value = percentMax ? (percentMax * 100).toFixed(0) : '';
+        document.getElementById('percentOrganizer').value = percentOrganizer ? (percentOrganizer * 100).toFixed(0) : '';
+        document.getElementById('bonusValue').value = bonusValue || '';
+        document.getElementById('taxValue').value = taxValue || '';
+    });
+
+    savePercent.addEventListener('click', () => {
+        const champ = parseFloat(document.getElementById('percentChampion').value) / 100;
+        const vice = parseFloat(document.getElementById('percentVice').value) / 100;
+        const maxP = parseFloat(document.getElementById('percentMax').value) / 100;
+        const org = parseFloat(document.getElementById('percentOrganizer').value) / 100;
+        const sum = (champ + vice + maxP + org).toFixed(2);
+        if (isNaN(champ) || isNaN(vice) || isNaN(maxP) || isNaN(org) || sum != 1) {
+            showStyledAlert('Os percentuais devem somar exatamente 100%');
+            return;
+        }
+        percentChampion = champ;
+        percentVice = vice;
+        percentMax = maxP;
+        percentOrganizer = org;
+        bonusValue = parseFloat(document.getElementById('bonusValue').value) || 0;
+        taxValue = parseFloat(document.getElementById('taxValue').value) || 0;
+        percentModal.style.display = 'none';
+        saveState();
+    });
+
+    closePercent.addEventListener('click', () => {
+        percentModal.style.display = 'none';
+    });
+
+    loadHistoryFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                parseHistory(ev.target.result);
+                saveState();
+            };
+            reader.readAsText(file);
+        }
+    });
+
+    function parseHistory(text) {
+        const lines = text.split(/\r?\n/);
+        history = [];
+        lines.forEach(line => {
+            line = line.trim();
+            if (line) {
+                const match = line.match(/^(campeao|campeão|vice|forrador)\s*-\s*([\w\s]+?)\s*(-\s*R\$\s*([\d.,]+))?$/i);
+                if (match) {
+                    const type = match[1].toLowerCase().replace('campeão', 'campeao');
+                    const originalName = match[2].trim();
+                    const name = originalName.toLowerCase();
+                    const valueStr = match[4] ? match[4].replace(',', '.') : '0';
+                    const value = parseFloat(valueStr) || 0;
+                    history.push({type, name, originalName, value});
+                }
+            }
+        });
+        updateAchievements();
+    }
+
+    function updateAchievements() {
+        achievements = {};
+        history.forEach(entry => {
+            const lower = entry.name;
+            if (!achievements[lower]) {
+                achievements[lower] = {gold: 0, silver: 0, money: 0, sum: 0, originalName: entry.originalName};
+            }
+            if (entry.type === 'campeao') achievements[lower].gold++;
+            else if (entry.type === 'vice') achievements[lower].silver++;
+            else if (entry.type === 'forrador') achievements[lower].money++;
+            achievements[lower].sum += entry.value;
+        });
+    }
+
+    function getAchievementsStr(name) {
+        const lower = name.toLowerCase();
+        const data = achievements[lower];
+        if (!data) return '';
+        let str = '';
+        if (data.gold > 0) str += `🏆${data.gold > 1 ? 'x' + data.gold : ''} `;
+        if (data.silver > 0) str += `🥈${data.silver > 1 ? 'x' + data.silver : ''} `;
+        if (data.money > 0) str += `💸${data.money > 1 ? 'x' + data.money : ''} `;
+        return str.trim();
+    }
+
+    function getDisplayName(name, forCircle = false) {
+        const ach = getAchievementsStr(name);
+        if (forCircle) {
+            return `<span class="name">${name}</span><br><span class="achievements">${ach}</span>`;
+        } else {
+            return `${name} ${ach}`;
+        }
+    }
+
+    // Adicionar jogador
+    addButton.addEventListener('click', () => {
+        if (allPlayers.length === 0 && (percentChampion === null || percentVice === null || percentMax === null || percentOrganizer === null)) {
+            showStyledAlert('Preencha os percentuais dos prêmios antes de adicionar jogadores');
+            return;
+        }
+        const name = nameInput.value.trim();
+        if (name) {
+            if (allPlayers.includes(name)) {
+                showStyledAlert(`${name} já está pré-convocado`);
+                return;
+            }
+            allPlayers.push(name);
+            addNameToField(name);
+            nameInput.value = '';
+            nameInput.focus();
+            updateConvocados();
+            if (allPlayers.length >= 16) {
+                startSortButton.style.visibility = 'visible';
+            }
+            saveState();
+        }
+    });
+
+    // Adicionar nome ao campo sem overlap se possível
+    function addNameToField(name) {
+        const div = document.createElement('div');
+        div.classList.add('player-name');
+        const hue = Math.random() * 360;
+        div.style.background = `radial-gradient(circle at 30% 30%, hsl(${hue}, 70%, 90%), hsl(${hue}, 70%, 70%), hsl(${hue}, 70%, 50%))`;
+        div.innerHTML = `<span class="player-text">${getDisplayName(name, true)}</span>`;
+        div.onclick = () => confirmRemove(div);
+        let x, y, overlap;
+        do {
+            overlap = false;
+            x = Math.random() * (field.clientWidth - 60);
+            y = Math.random() * (field.clientHeight - 60);
+            for (let pos of placedPositions) {
+                const dist = Math.sqrt((x - pos.x)**2 + (y - pos.y)**2);
+                if (dist < 60) {
+                    overlap = true;
+                    break;
+                }
+            }
+        } while (overlap && placedPositions.length < (field.clientWidth / 60) * (field.clientHeight / 60));
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
+        div.dataset.dx = Math.random() * 2 - 1;
+        div.dataset.dy = Math.random() * 2 - 1;
+        div.dataset.name = name; // Store original name
+        field.appendChild(div);
+        placedPositions.push({x, y});
+    }
+
+    // Iniciar sorteio
+    startSortButton.addEventListener('click', () => {
+        document.getElementById('setup').style.display = 'none';
+        startSortButton.style.display = 'none';
+        convocados.style.display = 'none';
+        animateField();
+        select16Players();
+        saveState();
+    });
+
+    // Animação caótica
+    function animateField() {
+        let names = Array.from(field.querySelectorAll('.player-name'));
+        const animate = () => {
+            names = Array.from(field.querySelectorAll('.player-name'));
+            names.forEach(name => {
+                let x = parseFloat(name.style.left) || 0;
+                let y = parseFloat(name.style.top) || 0;
+                let dx = parseFloat(name.dataset.dx);
+                let dy = parseFloat(name.dataset.dy);
+
+                x += dx * 5;
+                y += dy * 5;
+
+                if (x < 0 || x > field.clientWidth - 60) {
+                    dx = -dx;
+                    x = Math.max(0, Math.min(x, field.clientWidth - 60));
+                }
+                if (y < 0 || y > field.clientHeight - 60) {
+                    dy = -dy;
+                    y = Math.max(0, Math.min(y, field.clientHeight - 60));
+                }
+
+                names.forEach(other => {
+                    if (other !== name) {
+                        const ox = parseFloat(other.style.left) || 0;
+                        const oy = parseFloat(other.style.top) || 0;
+                        const dist = Math.sqrt((x - ox)**2 + (y - oy)**2);
+                        if (dist < 60 && dist > 0) {
+                            const angle = Math.atan2(y - oy, x - ox);
+                            dx = Math.cos(angle);
+                            dy = Math.sin(angle);
+                            other.dataset.dx = -Math.cos(angle);
+                            other.dataset.dy = -Math.sin(angle);
+                        }
+                    }
+                });
+
+                name.style.left = `${x}px`;
+                name.style.top = `${y}px`;
+                name.dataset.dx = dx;
+                name.dataset.dy = dy;
+            });
+            animationFrameId = requestAnimationFrame(animate);
+        };
+        animate();
+    }
+
+    // Parar animação
+    function stopAnimation() {
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+    }
+
+    // Selecionar 16 aleatoriamente e explodir eliminados
+    function select16Players() {
+        let shuffled = [...allPlayers].sort(() => 0.5 - Math.random());
+        selectedPlayers = shuffled.slice(0, 16);
+        eliminatedPlayers = shuffled.slice(16);
+        const names = field.querySelectorAll('.player-name');
+        names.forEach(name => {
+            const text = name.dataset.name;
+            name.dataset.isEliminated = eliminatedPlayers.includes(text) ? 'true' : 'false';
+        });
+        setTimeout(() => {
+            stopAnimation();
+            const remaining = field.querySelectorAll('.player-name[data-is-eliminated="true"]');
+            const survivors = Array.from(field.querySelectorAll('.player-name[data-is-eliminated="false"]'));
+            const fakeShakeCount = Math.floor(Math.random() * 4) + 2;
+            const fakeShakers = survivors.sort(() => Math.random() - 0.5).slice(0, fakeShakeCount);
+            fakeShakers.forEach(el => el.classList.add('shaking'));
+            let index = 0;
+            const forceInterval = setInterval(() => {
+                if (index < remaining.length) {
+                    const el = remaining[index];
+                    el.classList.add('shaking');
+                    setTimeout(() => {
+                        explodeWithParticles(el);
+                        el.remove();
+                    }, 500);
+                    index++;
+                } else {
+                    fakeShakers.forEach(el => el.classList.remove('shaking'));
+                    clearInterval(forceInterval);
+                    setTimeout(showSelectionModal, 1000);
+                }
+            }, 5000 / (remaining.length || 1));
+        }, 3000);
+        saveState();
+    }
+
+    function explodeWithParticles(element) {
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = `${centerX}px`;
+            particle.style.top = `${centerY}px`;
+
+            const angle = Math.random() * 2 * Math.PI;
+            const distance = Math.random() * 100 + 50;
+
+            particle.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+            particle.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
+
+            document.body.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 1000);
+        }
+
+        element.remove();
+    }
+
+    // Mostrar modal de seleção
+    function showSelectionModal() {
+        selectedList.innerHTML = '';
+        selectedPlayers.forEach((player, index) => {
+            const div = document.createElement('div');
+            div.classList.add('selected-player');
+            div.innerHTML = `
+                <span>${getDisplayName(player)}</span>
+                <div class="buttons">
+                    <button class="ok-btn" onclick="escalarPlayer(${index})">OK</button>
+                    <button class="x-btn" onclick="confirmReject(${index})">X</button>
+                </div>
+            `;
+            selectedList.appendChild(div);
+        });
+        updateStatusInfo();
+        selectionModal.style.display = 'flex';
+    }
+
+    // Escalar jogador
+    window.escalarPlayer = function(index) {
+        if (!entryValueInput.value) {
+            showStyledAlert('A entrada ainda está franca');
+            return;
+        }
+        const div = selectedList.children[index];
+        const player = selectedPlayers[index];
+        if (div.classList.contains('paid')) {
+            confirmedPlayers = confirmedPlayers.filter(p => p !== player);
+            div.classList.remove('paid');
+            div.querySelector('.ok-btn').disabled = false;
+            div.querySelector('.x-btn').disabled = false;
+        } else {
+            confirmedPlayers.push(player);
+            div.classList.add('paid');
+            div.querySelector('.ok-btn').disabled = false;
+            div.querySelector('.x-btn').disabled = true;
+        }
+        updateStatusInfo();
+        if (confirmedPlayers.length === 16) {
+            sortBracketButton.style.visibility = 'visible';
+        } else {
+            sortBracketButton.style.visibility = 'hidden';
+        }
+        saveState();
+    }
+
+    // Confirmar rejeição
+    window.confirmReject = function(index) {
+        const player = selectedPlayers[index];
+        showConfirm(`Deseja realmente substituir ${player}?`, (yes) => {
+            if (yes) {
+                rejectPlayer(index);
+            }
+        });
+    }
+
+    window.rejectPlayer = function(index) {
+        if (eliminatedPlayers.length > 0) {
+            const replacement = eliminatedPlayers.shift();
+            selectedPlayers[index] = replacement;
+            selectedList.children[index].querySelector('span').textContent = getDisplayName(replacement);
+            updateStatusInfo();
+            saveState();
+        } else {
+            showStyledAlert('O banco de reservas está vazio');
+        }
+    }
+
+    // Atualizar info de status
+    function updateStatusInfo() {
+        statusInfo.textContent = `${confirmedPlayers.length}/16 Escalados | Reserva: ${eliminatedPlayers.length}`;
+    }
+
+    // Mostrar alerta estilizado
+    function showStyledAlert(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.classList.add('styled-alert');
+        alertDiv.textContent = message;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    }
+
+    // Sortear chaveamento
+    sortBracketButton.addEventListener('click', () => {
+        entryValue = parseFloat(entryValueInput.value) || 10;
+        selectionModal.style.display = 'none';
+        field.style.display = 'none';
+        phasePlayers.oitavas = confirmedPlayers.sort(() => Math.random() - 0.5);
+        pot = confirmedPlayers.length * (entryValue - taxValue);
+        bracketViewport.style.display = 'block';
+        progressBtn.style.display = 'block';
+        initAllPhases();
+        drawBracketLines();
+        startPhase('oitavas');
+        currentPhaseIndex = 0;
+        saveState();
+    });
+
+    // Inicializar todas as fases
+    function initAllPhases() {
+        bracket.innerHTML = ''; // Clear bracket to re-init
+        phases.forEach(phase => {
+            for (let i = 0; i < matchCounts[phase]; i++) {
+                const matchDiv = document.createElement('div');
+                matchDiv.classList.add('match');
+                matchDiv.id = `${phase}-match-${i}`;
+                const pos = matchPositions[phase][i];
+                matchDiv.style.left = `${pos.col * colWidth + (colWidth - matchWidth)/2}px`;
+                matchDiv.style.top = `${pos.top}px`;
+                const title = document.createElement('div');
+                title.classList.add('match-title');
+                title.innerText = `${i + 1}ª Partida`;
+                matchDiv.appendChild(title);
+                matchDiv.innerHTML += '<div class="player">Aguardando...</div><div class="vs">vs</div><div class="player">Aguardando...</div>';
+                bracket.appendChild(matchDiv);
+            }
+        });
+
+        const labels = [
+            {col: 0, text: 'Oitavas'},
+            {col: 1, text: 'Quartas'},
+            {col: 2, text: 'Semis'},
+            {col: 3, text: 'Final'},
+            {col: 4, text: 'Semis'},
+            {col: 5, text: 'Quartas'},
+            {col: 6, text: 'Oitavas'}
+        ];
+        labels.forEach(label => {
+            const div = document.createElement('div');
+            div.classList.add('phase-label');
+            div.innerText = label.text;
+            div.style.left = `${label.col * colWidth + colWidth / 2 - 50}px`;
+            div.style.top = '10px';
+            bracket.appendChild(div);
+        });
+    }
+
+    // Desenhar linhas do chaveamento
+    function drawBracketLines() {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.id = 'bracket-lines';
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.width = `${bracketWidth}px`;
+        svg.style.height = `${bracketHeight}px`;
+        svg.style.pointerEvents = 'none';
+        bracket.appendChild(svg);
+    }
+
+    // Iniciar fase
+    function startPhase(phase) {
+        currentMatch = currentMatch; // Use saved currentMatch
+        const phasePlayersList = phasePlayers[phase];
+        for (let i = 0; i < matchCounts[phase]; i++) {
+            const matchDiv = document.getElementById(`${phase}-match-${i}`);
+            const p1Index = i * 2;
+            const p2Index = p1Index + 1;
+            if (p1Index < phasePlayersList.length) {
+                const player1Name = phasePlayersList[p1Index];
+                const player2Name = phasePlayersList[p2Index];
+                const key = `${phase}-${i}`;
+                const val1 = matchResults[key] ? matchResults[key].val1 : '';
+                const val2 = matchResults[key] ? matchResults[key].val2 : '';
+                const playerDivs = matchDiv.querySelectorAll('.player');
+                playerDivs[0].innerHTML = `<div class="player-text"><span class="name" title="${player1Name}">${player1Name}</span><br><span class="achievements">${getAchievementsStr(player1Name)}</span></div> <input type="number" step="0.01" id="${phase}-p1-${i}" min="0" value="${val1}">`;
+                playerDivs[1].innerHTML = `<div class="player-text"><span class="name" title="${player2Name}">${player2Name}</span><br><span class="achievements">${getAchievementsStr(player2Name)}</span></div> <input type="number" step="0.01" id="${phase}-p2-${i}" min="0" value="${val2}">`;
+                if (matchResults[key]) {
+                    playerDivs[0].classList.remove('winner', 'loser');
+                    playerDivs[1].classList.remove('winner', 'loser');
+                    if (val1 >= val2) {
+                        playerDivs[0].classList.add('winner');
+                        playerDivs[1].classList.add('loser');
+                    } else {
+                        playerDivs[0].classList.add('loser');
+                        playerDivs[1].classList.add('winner');
+                    }
+                    // Restore summary if exists
+                    const summaryDiv = document.createElement('div');
+                    summaryDiv.classList.add('summary');
+                    const sign1 = (val1 - bonusValue >= 0 ? '+' : '-');
+                    const sign2 = (val2 - bonusValue >= 0 ? '+' : '-');
+                    const absVal1 = Math.abs(val1 - bonusValue).toFixed(2).replace('.', ',');
+                    const absVal2 = Math.abs(val2 - bonusValue).toFixed(2).replace('.', ',');
+                    summaryDiv.innerHTML = `
+                        <div style="color: ${val1 - bonusValue >= 0 ? 'green' : 'red'}">${matchResults[key].p1Name}: ${sign1} ${absVal1}</div>
+                        <div style="color: ${val2 - bonusValue >= 0 ? 'green' : 'red'}">${matchResults[key].p2Name}: ${sign2} ${absVal2}</div>
+                    `;
+                    matchDiv.appendChild(summaryDiv);
+                } else if (i >= currentMatch) {
+                    const existingBtn = matchDiv.querySelector('button.resolve');
+                    if (existingBtn) existingBtn.remove();
+                    const resolveBtn = document.createElement('button');
+                    resolveBtn.classList.add('resolve');
+                    resolveBtn.innerText = '⚽';
+                    resolveBtn.addEventListener('click', () => resolveMatch(phase, i, matchDiv));
+                    matchDiv.appendChild(resolveBtn);
+                }
+            } else {
+                const playerDivs = matchDiv.querySelectorAll('.player');
+                playerDivs[0].innerHTML = 'Aguardando...';
+                playerDivs[1].innerHTML = 'Aguardando...';
+            }
+        }
+    }
+
+    // Resolver partida
+    function resolveMatch(phase, matchIndex, matchDiv) {
+        if (matchIndex !== currentMatch) {
+            showStyledAlert('Resolva as partidas em ordem crescente');
+            return;
+        }
+
+        const input1 = document.getElementById(`${phase}-p1-${matchIndex}`);
+        const input2 = document.getElementById(`${phase}-p2-${matchIndex}`);
+        if (input1.value.trim() === '' || input2.value.trim() === '') {
+            showStyledAlert('Preencha ambos os campos');
+            return;
+        }
+
+        const val1 = parseFloat(input1.value) || 0;
+        const val2 = parseFloat(input2.value) || 0;
+
+        if (isNaN(val1) || isNaN(val2) || val1 < 0 || val2 < 0) {
+            showStyledAlert('Insira valores válidos maiores ou iguais a 0');
+            return;
+        }
+
+        const p1Name = matchDiv.querySelectorAll('.player-text .name')[0].textContent;
+        const p2Name = matchDiv.querySelectorAll('.player-text .name')[1].textContent;
+
+        const val1Str = val1.toFixed(2).replace('.', ',');
+        const val2Str = val2.toFixed(2).replace('.', ',');
+
+        showConfirm(`Confirma os resultados?\n${p1Name}: R$ ${val1Str}\n${p2Name}: R$ ${val2Str}`, (yes) => {
+            if (yes) {
+                matchDiv.querySelector('button.resolve').disabled = true;
+                setTimeout(() => {
+                    let winnerDiv, loserDiv, winnerName, winnerVal, loserName, playerDivs;
+                    playerDivs = matchDiv.querySelectorAll('.player');
+                    if (val1 > val2) {
+                        winnerDiv = playerDivs[0];
+                        loserDiv = playerDivs[1];
+                        winnerName = p1Name;
+                        loserName = p2Name;
+                        winnerVal = val1;
+                    } else if (val2 > val1) {
+                        winnerDiv = playerDivs[1];
+                        loserDiv = playerDivs[0];
+                        winnerName = p2Name;
+                        loserName = p1Name;
+                        winnerVal = val2;
+                    } else {
+                        winnerDiv = playerDivs[0];
+                        loserDiv = playerDivs[1];
+                        winnerName = p1Name;
+                        loserName = p2Name;
+                        winnerVal = val1;
+                    }
+                    if (val1 > maxResult) { maxResult = val1; maxResultPlayer = p1Name; }
+                    if (val2 > maxResult) { maxResult = val2; maxResultPlayer = p2Name; }
+                    winnerDiv.classList.add('winner');
+                    loserDiv.classList.add('loser');
+                    pot += (val1 - bonusValue) + (val2 - bonusValue);
+                    winners[phase].push(winnerName);
+                    if (phase === 'final') {
+                        losers.final.push(loserName);
+                    }
+                    matchResults[`${phase}-${matchIndex}`] = {winnerName, loserName, winnerVal, val1, val2, p1Name, p2Name};
+                    matchDiv.querySelector('button.resolve').remove();
+                    const summaryDiv = document.createElement('div');
+                    summaryDiv.classList.add('summary');
+                    const sign1 = (val1 - bonusValue >= 0 ? '+' : '-');
+                    const sign2 = (val2 - bonusValue >= 0 ? '+' : '-');
+                    const absVal1 = Math.abs(val1 - bonusValue).toFixed(2).replace('.', ',');
+                    const absVal2 = Math.abs(val2 - bonusValue).toFixed(2).replace('.', ',');
+                    summaryDiv.innerHTML = `
+                        <div style="color: ${val1 - bonusValue >= 0 ? 'green' : 'red'}">${p1Name}: ${sign1} ${absVal1}</div>
+                        <div style="color: ${val2 - bonusValue >= 0 ? 'green' : 'red'}">${p2Name}: ${sign2} ${absVal2}</div>
+                    `;
+                    matchDiv.appendChild(summaryDiv);
+                    confettiBurst();
+                    currentMatch++;
+                    if (currentMatch >= matchCounts[phase]) {
+                        currentPhaseIndex++;
+                        currentMatch = 0;
+                        const nextPhase = phases[currentPhaseIndex];
+                        if (nextPhase) {
+                            phasePlayers[nextPhase] = winners[phase];
+                            startPhase(nextPhase);
+                        } else {
+                            showResults();
+                        }
+                    }
+                    saveState();
+                }, 1500);
+            }
+        });
+    }
+
+    function calculatePrizes() {
+        const winnerPrize = pot * percentChampion;
+        const vicePrize = pot * percentVice;
+        const maxPrize = pot * percentMax;
+        const organizer = pot * percentOrganizer;
+        return { winnerPrize, vicePrize, maxPrize, organizer };
+    }
+
+    function drawPieChart(chartId) {
+        const canvas = document.getElementById(chartId);
+        const ctx = canvas.getContext('2d');
+        const { winnerPrize, vicePrize, maxPrize, organizer } = calculatePrizes();
+        const data = [winnerPrize, vicePrize, maxPrize, organizer];
+        const labels = ['Campeão', 'Vice', 'Forrada', 'Organizador'];
+        const colors = ['#32CD32', '#FFD700', '#FF4500', '#228B22'];
+        let total = data.reduce((a, b) => a + b, 0);
+        let startAngle = 0;
+        for (let i = 0; i < data.length; i++) {
+            let slice = (data[i] / total) * 2 * Math.PI;
+            ctx.beginPath();
+            ctx.arc(100, 100, 100, startAngle, startAngle + slice);
+            ctx.lineTo(100, 100);
+            ctx.fillStyle = colors[i];
+            ctx.fill();
+            // Add percentage
+            const midAngle = startAngle + slice / 2;
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const textX = 100 + 50 * Math.cos(midAngle);
+            const textY = 100 + 50 * Math.sin(midAngle);
+            const percent = ((data[i] / total) * 100).toFixed(0) + '%';
+            ctx.fillText(percent, textX, textY);
+            startAngle += slice;
+        }
+        // Legend
+        const legendX = 220;
+        const legendY = 50;
+        for (let i = 0; i < labels.length; i++) {
+            ctx.fillStyle = colors[i];
+            ctx.fillRect(legendX, legendY + i * 20, 10, 10);
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(labels[i], legendX + 15, legendY + i * 20 + 5);
+        }
+    }
+
+    function showResults() {
+        const champion = winners.final[0];
+        const vice = losers.final[0] || 'N/A';
+        const { winnerPrize, vicePrize, maxPrize, organizer } = calculatePrizes();
+        const initialBanca = confirmedPlayers.length * (entryValue - taxValue);
+
+        const ul = results.querySelector('ul');
+        ul.innerHTML = `
+            <li>Banca Inicial: R$ ${initialBanca.toFixed(2).replace('.', ',')}</li>
+            <li>Valor Total do Prêmio: R$ ${pot.toFixed(2).replace('.', ',')}</li>
+            <li>Campeão: ${getDisplayName(champion)}<br>Prêmio (${(percentChampion * 100).toFixed(0)}%): R$ ${winnerPrize.toFixed(2).replace('.', ',')}</li>
+            <li>Vice: ${getDisplayName(vice)}<br>Prêmio (${(percentVice * 100).toFixed(0)}%): R$ ${vicePrize.toFixed(2).replace('.', ',')}</li>
+            <li>Maior Forrada: ${getDisplayName(maxResultPlayer)} (${maxResult.toFixed(2).replace('.', ',')})<br>Prêmio (${(percentMax * 100).toFixed(0)}%): R$ ${maxPrize.toFixed(2).replace('.', ',')}</li>
+            <li>Organizador:<br>Prêmio (${(percentOrganizer * 100).toFixed(0)}%): R$ ${organizer.toFixed(2).replace('.', ',')}</li>
+        `;
+        results.style.display = 'block';
+        drawPieChart('resultsPie');
+        document.getElementById('minimizeResults').addEventListener('click', () => {
+            results.style.display = 'none';
+            document.getElementById('showResults').style.display = 'block';
+        });
+        document.getElementById('showResults').addEventListener('click', () => {
+            results.style.display = 'block';
+            document.getElementById('showResults').style.display = 'none';
+        });
+    }
+
+    saveChampionship.addEventListener('click', () => {
+        const champion = winners.final[0];
+        const vice = losers.final[0] || 'N/A';
+        const forrador = maxResultPlayer;
+        const { winnerPrize, vicePrize, maxPrize } = calculatePrizes();
+        const newLines = [
+            `CAMPEAO - ${champion} - R$ ${winnerPrize.toFixed(2).replace('.', ',')}`,
+            `VICE - ${vice} - R$ ${vicePrize.toFixed(2).replace('.', ',')}`,
+            `FORRADOR - ${forrador} - R$ ${maxPrize.toFixed(2).replace('.', ',')}`
+        ];
+        const historyText = history.map(entry => `${entry.type.toUpperCase()} - ${entry.originalName} - R$ ${entry.value.toFixed(2).replace('.', ',')}`).join('\n') + '\n' + newLines.join('\n');
+        const blob = new Blob([historyText], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'felcuphistory28082025.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+        // Add to history
+        history.push({type: 'campeao', name: champion.toLowerCase(), originalName: champion, value: winnerPrize});
+        history.push({type: 'vice', name: vice.toLowerCase(), originalName: vice, value: vicePrize});
+        history.push({type: 'forrador', name: forrador.toLowerCase(), originalName: forrador, value: maxPrize});
+        updateAchievements();
+        saveState();
+    });
+
+    progressBtn.addEventListener('click', () => {
+        const { winnerPrize, vicePrize, maxPrize, organizer } = calculatePrizes();
+        const initialBanca = confirmedPlayers.length * (entryValue - taxValue);
+        const ul = progressModal.querySelector('ul');
+        ul.innerHTML = `
+            <li>Banca Inicial: R$ ${initialBanca.toFixed(2).replace('.', ',')}</li>
+            <li>Banca Acumulada: R$ ${pot.toFixed(2).replace('.', ',')}</li>
+            <li>Campeão:<br>Prêmio (${(percentChampion * 100).toFixed(0)}%): R$ ${winnerPrize.toFixed(2).replace('.', ',')}</li>
+            <li>Vice-Campeão:<br>Prêmio (${(percentVice * 100).toFixed(0)}%): R$ ${vicePrize.toFixed(2).replace('.', ',')}</li>
+            <li>Maior Forrada:<br>Prêmio (${(percentMax * 100).toFixed(0)}%): R$ ${maxPrize.toFixed(2).replace('.', ',')}</li>
+            <li>Organizador:<br>Prêmio (${(percentOrganizer * 100).toFixed(0)}%): R$ ${organizer.toFixed(2).replace('.', ',')}</li>
+        `;
+        progressModal.style.display = 'block';
+        drawPieChart('progressPie');
+    });
+
+    closeProgress.addEventListener('click', () => {
+        progressModal.style.display = 'none';
+    });
+
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let particles = [];
+
+    function createParticle() {
+        return {
+            x: Math.random() * canvas.width,
+            y: 0,
+            size: Math.random() * 5 + 5,
+            speed: Math.random() * 5 + 2,
+            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+            rotation: Math.random() * 360,
+            rotSpeed: Math.random() * 10 - 5
+        };
+    }
+
+    function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+            p.y += p.speed;
+            p.rotation += p.rotSpeed;
+        });
+        particles = particles.filter(p => p.y < canvas.height);
+        if (particles.length > 0) requestAnimationFrame(drawParticles);
+    }
+
+    function confettiBurst(prolonged = false) {
+        const numParticles = prolonged ? 300 : 100;
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(createParticle());
+        }
+        drawParticles();
+    }
+
+function showConfirm(message, callback) {
+    document.getElementById('confirmMessage').innerHTML = message.replace(/\n/g, '<br>');
+    document.getElementById('confirmModal').style.display = 'block';
+    const yes = document.getElementById('confirmYes');
+    const no = document.getElementById('confirmNo');
+    yes.onclick = () => { callback(true); hide(); };
+    no.onclick = () => { callback(false); hide(); };
+    function hide() {
+        document.getElementById('confirmModal').style.display = 'none';
+        yes.onclick = null;
+        no.onclick = null;
+    }
+}
+
+    window.confirmRemove = function(div) {
+        const name = div.dataset.name;
+        showConfirm(`Deseja expulsar ${name}?`, (yes) => {
+            if (yes) {
+                div.remove();
+                allPlayers = allPlayers.filter(p => p !== name);
+                const x = parseFloat(div.style.left);
+                const y = parseFloat(div.style.top);
+                const index = placedPositions.findIndex(pos => pos.x === x && pos.y === y);
+                if (index > -1) {
+                    placedPositions.splice(index, 1);
+                }
+                updateConvocados();
+                if (allPlayers.length < 16) {
+                    startSortButton.style.visibility = 'hidden';
+                }
+                saveState();
+            }
+        });
+    }
+
+    function updateConvocados() {
+        convocados.textContent = `Pré Convocados: ${allPlayers.length}`;
+    }
+
+    // Timer logic
+    let timerInterval;
+    let timerTime = 0; // in milliseconds
+    function updateTimer() {
+        timerTime += 10; // 10ms interval for milliseconds
+        const minutes = Math.floor(timerTime / 60000);
+        const seconds = Math.floor((timerTime % 60000) / 1000);
+        const millis = timerTime % 1000;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
+    }
+
+    startTimer.addEventListener('click', () => {
+        if (!timerInterval) {
+            timerInterval = setInterval(updateTimer, 10);
+        }
+    });
+
+    stopTimer.addEventListener('click', () => {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    });
+
+    resetTimer.addEventListener('click', () => {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerTime = 0;
+        timerDisplay.textContent = '00:00.000';
+    });
+
+    closeTimer.addEventListener('click', () => {
+        timerModal.style.display = 'none';
+    });
+
+    timerBtn.addEventListener('click', () => {
+        timerModal.style.display = 'block';
+    });
+
+    // Roulette logic
+    function updateRouletteList() {
+        rouletteEntries.sort((a, b) => a.localeCompare(b));
+        rouletteEntriesList.innerHTML = '';
+        rouletteEntries.forEach((entry, idx) => {
+            const li = document.createElement('li');
+            const nameSpan = document.createElement('span');
+            nameSpan.classList.add('entry-name');
+            nameSpan.textContent = entry;
+            li.appendChild(nameSpan);
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remover';
+            removeBtn.onclick = () => {
+                rouletteEntries.splice(idx, 1);
+                updateRouletteList();
+                saveState();
+            };
+            li.appendChild(removeBtn);
+            rouletteEntriesList.appendChild(li);
+        });
+    }
+
+    addEntry.addEventListener('click', () => {
+        const entry = entryInput.value.trim();
+        if (entry) {
+            if (rouletteEntries.includes(entry)) {
+                showStyledAlert('Esta entrada já existe');
+                return;
+            }
+            rouletteEntries.push(entry);
+            entryInput.value = '';
+            updateRouletteList();
+            saveState();
+        }
+    });
+
+    loadFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const lines = ev.target.result.split(/\r?\n/);
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) rouletteEntries.push(trimmed);
+                });
+                updateRouletteList();
+                saveState();
+            };
+            reader.readAsText(file);
+        }
+    });
+
+    function truncateText(text, maxLength) {
+        return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
+    }
+
+function drawWheel(rotation = 0) {
+        rouletteCtx.clearRect(0, 0, rouletteCanvas.width, rouletteCanvas.height);
+        if (rouletteEntries.length === 0) return;
+        const centerX = rouletteCanvas.width / 2;
+        const centerY = rouletteCanvas.height / 2;
+        const radius = 190;
+        const arc = 2 * Math.PI / rouletteEntries.length;    // Outer shadow
+    rouletteCtx.beginPath();
+    rouletteCtx.arc(centerX, centerY, radius + 10, 0, 2 * Math.PI);
+    rouletteCtx.shadowColor = 'rgba(0,0,0,0.5)';
+    rouletteCtx.shadowBlur = 20;
+    rouletteCtx.shadowOffsetX = 0;
+    rouletteCtx.shadowOffsetY = 0;
+    rouletteCtx.fillStyle = 'transparent';
+    rouletteCtx.fill();
+
+    // Primeiro loop: desenhar os setores with gradient
+    rouletteEntries.forEach((entry, idx) => {
+        const startAngle = idx * arc + rotation;
+        const endAngle = (idx + 1) * arc + rotation;
+        const gradient = rouletteCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+        gradient.addColorStop(0, `hsl(${idx * 360 / rouletteEntries.length}, 70%, 80%)`);
+        gradient.addColorStop(1, `hsl(${idx * 360 / rouletteEntries.length}, 70%, 60%)`);
+        rouletteCtx.beginPath();
+        rouletteCtx.arc(centerX, centerY, radius, startAngle, endAngle);
+        rouletteCtx.lineTo(centerX, centerY);
+        rouletteCtx.fillStyle = gradient;
+        rouletteCtx.fill();
+        rouletteCtx.strokeStyle = '#fff';
+        rouletteCtx.lineWidth = 1; // Reduced line width
+        rouletteCtx.stroke();
+    });
+
+    // Segundo loop: desenhar textos
+    rouletteEntries.forEach((entry, idx) => {
+        const startAngle = idx * arc + rotation;
+        const midAngle = startAngle + arc / 2;
+
+        const maxLength = Math.max(...rouletteEntries.map(entry => entry.length));
+        let fontSize = Math.min(40, Math.max(24, 1000 / (rouletteEntries.length || 1)));
+        fontSize = Math.min(fontSize, 30 / (maxLength / 20 || 1));
+        const textRadius = radius * 0.6;
+
+        let text = truncateText(entry, Math.floor(textRadius / (fontSize * 0.3)));
+
+        rouletteCtx.save();
+        rouletteCtx.font = `normal ${fontSize}px Arial`;
+        rouletteCtx.fillStyle = '#fff';
+        rouletteCtx.shadowColor = '#000';
+        rouletteCtx.shadowBlur = 2;
+        rouletteCtx.textAlign = 'center';
+        rouletteCtx.textBaseline = 'middle';
+        rouletteCtx.translate(centerX, centerY);
+        rouletteCtx.rotate(midAngle);
+        rouletteCtx.fillText(text, textRadius, 0);
+        rouletteCtx.restore();
+    });
+
+    // Ponteiro with gradient
+    const pointerGradient = rouletteCtx.createLinearGradient(centerX + radius, centerY - 10, centerX + radius, centerY + 10);
+    pointerGradient.addColorStop(0, '#FFE700');
+    pointerGradient.addColorStop(1, '#DAA520');
+    rouletteCtx.beginPath();
+    rouletteCtx.moveTo(centerX + radius, centerY);
+    rouletteCtx.lineTo(centerX + radius + 20, centerY - 10);
+    rouletteCtx.lineTo(centerX + radius + 20, centerY + 10);
+    rouletteCtx.closePath();
+    rouletteCtx.fillStyle = pointerGradient;
+    rouletteCtx.fill();
+    rouletteCtx.strokeStyle = '#000';
+    rouletteCtx.lineWidth = 2;
+    rouletteCtx.stroke();
+}
+
+function spinWheel() {
+    if (rouletteEntries.length === 0) {
+        showStyledAlert('Adicione entradas primeiro');
+        return;
+    }
+    rouletteResult.textContent = '';
+    const randomIdx = Math.floor(Math.random() * rouletteEntries.length);
+    const extraTurns = 10 * 2 * Math.PI; // More turns for longer spin
+    const arc = 2 * Math.PI / rouletteEntries.length;
+    const midSliceAngle = randomIdx * arc + arc / 2;
+    const pointerAngle = 0; // Pointing right
+    let targetRotation = pointerAngle - midSliceAngle + extraTurns;
+    let currentRotation = 0;
+    let startTime = performance.now();
+    const duration = 5000; // 5 seconds for more suspense
+
+    function animateSpin(time) {
+        const elapsed = time - startTime;
+        const progress = elapsed / duration;
+        const easeOut = 1 - Math.pow(1 - progress, 5); // Quintic ease out
+        currentRotation = targetRotation * easeOut;
+        drawWheel(currentRotation % (2 * Math.PI));
+        if (elapsed < duration) {
+            requestAnimationFrame(animateSpin);
+        } else {
+            const finalAngle = currentRotation % (2 * Math.PI);
+            const boundaryOffset = 0.01;
+            let adjusted = false;
+            for (let i = 0; i < rouletteEntries.length; i++) {
+                const boundary = i * arc + finalAngle;
+                if (Math.abs(boundary % (2 * Math.PI) - pointerAngle) < boundaryOffset) {
+                    targetRotation += boundaryOffset * 2;
+                    adjusted = true;
+                    break;
+                }
+            }
+            if (adjusted) {
+                drawWheel(targetRotation % (2 * Math.PI));
+            }
+            const selected = rouletteEntries[randomIdx];
+            rouletteResult.textContent = `${selected}`;
+        }
+    }
+    requestAnimationFrame(animateSpin);
+}
+
+spinRoulette.addEventListener('click', spinWheel);
+
+closeRoulette.addEventListener('click', () => {
+    rouletteModal.style.display = 'none';
+});
+
+rouletteBtn.addEventListener('click', () => {
+    rouletteModal.style.display = 'block';
+    if (rouletteEntries.length === 0) {
+        rouletteEntriesModal.style.display = 'block';
+        updateRouletteList();
+    } else {
+        drawWheel();
+    }
+});
+
+manageEntries.addEventListener('click', () => {
+    rouletteEntriesModal.style.display = 'block';
+    updateRouletteList();
+});
+
+closeEntries.addEventListener('click', () => {
+    rouletteEntriesModal.style.display = 'none';
+    drawWheel();
+});
+
+drawWheel(); // Initial draw
+
+historyBtn.addEventListener('click', () => {
+    historyModal.style.display = 'block';
+    const tabs = historyModal.querySelectorAll('.tab-btn');
+    const rankingList = historyModal.querySelector('.ranking-list');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            tabs.forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            showRanking(e.target.dataset.type);
+        });
+    });
+    showRanking('campeao'); // Initial
+});
+
+closeHistory.addEventListener('click', () => {
+    historyModal.style.display = 'none';
+});
+
+function showRanking(type) {
+    const rankingList = historyModal.querySelector('.ranking-list');
+    rankingList.innerHTML = '';
+    const agg = {};
+    history.filter(entry => entry.type === type).forEach(entry => {
+        if (!agg[entry.name]) {
+            agg[entry.name] = {count: 0, sum: 0, originalName: entry.originalName};
+        }
+        agg[entry.name].count++;
+        agg[entry.name].sum += entry.value;
+    });
+    const sorted = Object.entries(agg).sort((a, b) => b[1].sum - a[1].sum || b[1].count - a[1].count);
+    sorted.forEach(([name, data], index) => {
+        const position = (index + 1) + 'º';
+        const emoji = type === 'campeao' ? '🏆' : type === 'vice' ? '🥈' : '💸';
+        const item = document.createElement('div');
+        item.classList.add('ranking-item');
+        item.innerHTML = `<span>${position} ${emoji}${data.count > 1 ? 'x' + data.count : ''} ${data.originalName}</span> <span>: R$ ${data.sum.toFixed(2).replace('.', ',')}</span>`;
+        rankingList.appendChild(item);
+    });
+}</script></body>
+</html>
+
